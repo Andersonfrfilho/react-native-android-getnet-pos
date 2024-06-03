@@ -1,6 +1,11 @@
 import * as React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
-import { startingServices, checkConnections } from 'react-native-getnet-pos';
+import {
+  ledMethod,
+  beeperMethod,
+  startingServices,
+  checkConnections,
+} from 'react-native-getnet-pos';
 
 export default function App() {
   const [connection, setConnection] = React.useState<boolean | undefined>();
@@ -12,6 +17,17 @@ export default function App() {
     checkConnections().then((response) => {
       setConnection(response.connection);
     });
+    beeperMethod('nfc').then((response) => {
+      console.log(response);
+    });
+    ledMethod('all', true).then((response) => {
+      console.log(response);
+    });
+    setTimeout(() => {
+      ledMethod('all', false).then((response) => {
+        console.log(response);
+      });
+    }, 2000);
   }, []);
 
   return (

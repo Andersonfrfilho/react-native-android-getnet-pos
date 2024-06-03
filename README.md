@@ -11,7 +11,7 @@ npm install react-native-getnet-pos
 ## Usage
 
 ```js
-import { startingServices, checkConnections } from 'react-native-getnet-pos';
+import { startingServices, checkConnections, beeperMethod, ledMethod } from 'react-native-getnet-pos';
 
 // ...
 
@@ -20,6 +20,12 @@ const result = await startingServices();
 
 const connection = await checkConnections();
 // returns a object { "connection": boolean }. 'true' for connected and 'false' for not connected.
+
+const beeper = await beeperMethod("nfc"); //input: "ncf" | "error" | "digit" | "success"
+// returns a object {  beeper: boolean, "type": string }.
+
+const leds = await ledMethod("all", true); //inputs: "all" | "red" | "green" | "blue" | "yellow"; 'true' or 'false'
+// returns a object { "color": string, "turn": boolean}.
 ```
 
 ## Contributing

@@ -27,3 +27,22 @@ interface CheckConnectionsResult {
 export function checkConnections(): Promise<CheckConnectionsResult> {
   return GetnetPos.checkConnections();
 }
+
+interface BeeperMethodResult {
+  type: string;
+  beeper: boolean;
+}
+export function beeperMethod(beeperMode: string): Promise<BeeperMethodResult> {
+  return GetnetPos.beeperMethod({ beeperMode: beeperMode });
+}
+
+interface LedMethodResult {
+  color: string;
+  turn: boolean;
+}
+export function ledMethod(
+  color: string,
+  turn: boolean
+): Promise<LedMethodResult> {
+  return GetnetPos.ledMethod({ color: color, turn: turn });
+}
