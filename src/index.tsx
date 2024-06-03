@@ -17,6 +17,13 @@ const GetnetPos = NativeModules.GetnetPos
       }
     );
 
-export function multiply(a: number, b: number): Promise<number> {
-  return GetnetPos.multiply(a, b);
+export function startingServices(): Promise<boolean> {
+  return GetnetPos.startingServices();
+}
+
+interface CheckConnectionsResult {
+  connection: boolean;
+}
+export function checkConnections(): Promise<CheckConnectionsResult> {
+  return GetnetPos.checkConnections();
 }

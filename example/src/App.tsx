@@ -1,18 +1,22 @@
 import * as React from 'react';
-
 import { StyleSheet, View, Text } from 'react-native';
-import { multiply } from 'react-native-getnet-pos';
+import { startingServices, checkConnections } from 'react-native-getnet-pos';
 
 export default function App() {
-  const [result, setResult] = React.useState<number | undefined>();
+  const [connection, setConnection] = React.useState<boolean | undefined>();
 
   React.useEffect(() => {
-    multiply(3, 7).then(setResult);
+    startingServices().then((response) => {
+      console.log(response);
+    });
+    checkConnections().then((response) => {
+      setConnection(response.connection);
+    });
   }, []);
 
   return (
     <View style={styles.container}>
-      <Text>Result: {result}</Text>
+      <Text>Connection: {connection?.toString()}</Text>
     </View>
   );
 }
