@@ -46,3 +46,14 @@ export function ledMethod(
 ): Promise<LedMethodResult> {
   return GetnetPos.ledMethod({ color: color, turn: turn });
 }
+
+interface CameraMethodResult {
+  error: boolean;
+  message: string;
+}
+export function cameraMethod(
+  cameraType: string,
+  timeout: number
+): Promise<CameraMethodResult> {
+  return GetnetPos.cameraMethod({ cameraType: cameraType, timeout: timeout });
+}

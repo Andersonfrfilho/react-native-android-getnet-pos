@@ -21,11 +21,14 @@ const result = await startingServices();
 const connection = await checkConnections();
 // returns a object { "connection": boolean }. 'true' for connected and 'false' for not connected.
 
-const beeper = await beeperMethod("nfc"); //input: "ncf" | "error" | "digit" | "success"
-// returns a object {  beeper: boolean, "type": string }.
+const beeper = await beeperMethod("nfc"); //input type: "ncf" | "error" | "digit" | "success"
+// returns a object { "beeper": boolean, "type": string }.
 
-const leds = await ledMethod("all", true); //inputs: "all" | "red" | "green" | "blue" | "yellow"; 'true' or 'false'
+const leds = await ledMethod("all", true); //inputs color and turn on: "all" | "red" | "green" | "blue" | "yellow"; 'true' or 'false'
 // returns a object { "color": string, "turn": boolean}.
+
+const leds = await cameraMethod("back", 30); //inputs camera type and timeout: "back" | "front"; interger.
+// returns a object { "message": string, "error": boolean}.
 ```
 
 ## Contributing

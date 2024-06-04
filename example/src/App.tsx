@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, Button } from 'react-native';
 import {
   ledMethod,
   beeperMethod,
+  cameraMethod,
   startingServices,
   checkConnections,
 } from 'react-native-getnet-pos';
@@ -17,22 +18,41 @@ export default function App() {
     checkConnections().then((response) => {
       setConnection(response.connection);
     });
-    beeperMethod('nfc').then((response) => {
-      console.log(response);
-    });
-    ledMethod('all', true).then((response) => {
-      console.log(response);
-    });
-    setTimeout(() => {
-      ledMethod('all', false).then((response) => {
+  }, []);
+
+  function Beep() {
+    if (connection) {
+      beeperMethod('nfc').then((response) => {
         console.log(response);
       });
-    }, 2000);
-  }, []);
+    }
+  }
+  function LEDs() {
+    if (connection) {
+      ledMethod('all', true).then((response) => {
+        console.log(response);
+      });
+      setTimeout(() => {
+        ledMethod('all', false).then((response) => {
+          console.log(response);
+        });
+      }, 1000);
+    }
+  }
+  function Camera() {
+    if (connection) {
+      cameraMethod('back', 30).then((response) => {
+        console.log(response);
+      });
+    }
+  }
 
   return (
     <View style={styles.container}>
       <Text>Connection: {connection?.toString()}</Text>
+      <Button title="Click to Beep" onPress={Beep} />
+      <Button title="Click to Turn On/Off LEDs" onPress={LEDs} />
+      <Button title="Click to Open Rear Camera" onPress={Camera} />
     </View>
   );
 }
@@ -40,12 +60,8 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    gap: 10,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  box: {
-    width: 60,
-    height: 60,
-    marginVertical: 20,
   },
 });

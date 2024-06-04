@@ -7,6 +7,7 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.WritableNativeMap
 import com.getnet.posdigital.PosDigital
+import com.getnet.posdigital.camera.ICameraCallback;
 import android.util.Log
 
 class GetnetPosModule(reactContext: ReactApplicationContext) :
@@ -103,6 +104,47 @@ class GetnetPosModule(reactContext: ReactApplicationContext) :
       }
     } catch (e: Exception) {
       promise.reject("error on ledMethod: ", e.message)
+    }
+  }
+
+  @ReactMethod
+  fun cameraMethod(data: ReadableMap, promise: Promise) {
+    try {
+      val timeout = data.getInt("timeout")
+      val camera = PosDigital.getInstance().getCamera()
+      val cameraType = data.getString("cameraType")?.lowercase()
+
+      val callback: ICameraCallback = object: ICameraCallback.Stub() {
+        val cameraResponse = WritableNativeMap()
+
+        override fun onSuccess(s: String) {
+          cameraResponse.putBoolean("error", false)
+          cameraResponse.putString("message", s)
+          promise.resolve(cameraResponse)
+        }
+        override fun onTimeout() {
+          cameraResponse.putBoolean("error", true)
+          cameraResponse.putString("message", "time exceeded")
+          promise.resolve(cameraResponse)
+        }
+        override fun onCancel() {
+          cameraResponse.putBoolean("error", true)
+          cameraResponse.putString("message", "option canceled")
+          promise.resolve(cameraResponse)
+        }
+        override fun onError(s: String) {
+          cameraResponse.putBoolean("error", true)
+          cameraResponse.putString("message", s)
+          promise.resolve(cameraResponse)
+        }
+      }
+      if (cameraType == "front") {
+          camera.readFront(timeout, callback)
+      } else {
+          camera.readBack(timeout, callback)
+      }
+    } catch (e: Exception) {
+        promise.reject("error", e.message)
     }
   }
 }
