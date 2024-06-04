@@ -11,7 +11,15 @@ npm install react-native-getnet-pos
 ## Usage
 
 ```js
-import { startingServices, checkConnections, beeperMethod, ledMethod } from 'react-native-getnet-pos';
+import {
+  ledMethod,
+  beeperMethod,
+  cameraMethod,
+  startingServices,
+  checkConnections,
+  cardStopConnectAntenna,
+  cardStartConnectAntenna,
+} from 'react-native-getnet-pos';
 
 // ...
 
@@ -27,8 +35,15 @@ const beeper = await beeperMethod("nfc"); //input type: "ncf" | "error" | "digit
 const leds = await ledMethod("all", true); //inputs color and turn on: "all" | "red" | "green" | "blue" | "yellow"; 'true' or 'false'
 // returns a object { "color": string, "turn": boolean}.
 
-const leds = await cameraMethod("back", 30); //inputs camera type and timeout: "back" | "front"; interger.
+const camera = await cameraMethod("back", 30); //inputs camera type and timeout: "back" | "front"; interger.
 // returns a object { "message": string, "error": boolean}.
+
+const startCard = await cardStartConnectAntenna("magnetic", 30); //inputs card type and timeout: "magnetic" | "nfc" | "chip" | "all"; interger.
+// on success returns a object { "pan": string,  "type": string, "track1": string, "track2": string, "track3": string, "dataExpired": string, "numberCard": number }
+// on error returns a object { "message": string, "error": boolean}.
+
+const stopCard = await cardStopConnectAntenna();
+// returns a object { "stop": boolean}.
 ```
 
 ## Contributing

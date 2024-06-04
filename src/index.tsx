@@ -57,3 +57,24 @@ export function cameraMethod(
 ): Promise<CameraMethodResult> {
   return GetnetPos.cameraMethod({ cameraType: cameraType, timeout: timeout });
 }
+
+interface CardStartConnectAntennaResult {
+  error: boolean;
+  message: string;
+}
+export function cardStartConnectAntenna(
+  cardType: string,
+  timeout: number
+): Promise<CardStartConnectAntennaResult> {
+  return GetnetPos.cardStartConnectAntenna({
+    cardType: cardType,
+    timeout: timeout,
+  });
+}
+
+interface CardStopConnectAntennaResult {
+  stop: boolean;
+}
+export function cardStopConnectAntenna(): Promise<CardStopConnectAntennaResult> {
+  return GetnetPos.cardStopConnectAntenna();
+}

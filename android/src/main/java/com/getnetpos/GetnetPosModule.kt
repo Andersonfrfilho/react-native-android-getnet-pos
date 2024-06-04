@@ -7,7 +7,10 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.WritableNativeMap
 import com.getnet.posdigital.PosDigital
-import com.getnet.posdigital.camera.ICameraCallback;
+import com.getnet.posdigital.camera.ICameraCallback
+import com.getnet.posdigital.card.CardResponse
+import com.getnet.posdigital.card.ICardCallback
+import com.getnet.posdigital.card.SearchType
 import android.util.Log
 
 class GetnetPosModule(reactContext: ReactApplicationContext) :
@@ -145,6 +148,61 @@ class GetnetPosModule(reactContext: ReactApplicationContext) :
       }
     } catch (e: Exception) {
         promise.reject("error", e.message)
+    }
+  }
+
+  @ReactMethod
+  fun cardStartConnectAntenna(data: ReadableMap, promise: Promise) {
+    val timeout = data.getInt("timeout").toLong()
+    val cardType = data.getString("cardType")?.lowercase()
+    var searchType = arrayOf<String>()
+
+    when (cardType) {
+      "nfc" -> searchType = arrayOf(SearchType.NFC)
+      "chip" -> searchType = arrayOf(SearchType.CHIP)
+      "magnetic" -> searchType = arrayOf(SearchType.MAG)
+      else -> searchType = arrayOf(SearchType.MAG, SearchType.CHIP, SearchType.NFC)
+    }
+
+    try {
+      PosDigital.getInstance().card.search(timeout, searchType, object : ICardCallback.Stub() {
+        val connectCardResponse = WritableNativeMap()
+
+        override fun onCard(cardResponse: CardResponse) {
+          connectCardResponse.putString("pan", cardResponse.pan)
+          connectCardResponse.putString("type", cardResponse.type)
+          connectCardResponse.putString("track1", cardResponse.track1)
+          connectCardResponse.putString("track2", cardResponse.track2)
+          connectCardResponse.putString("track3", cardResponse.track3)
+          connectCardResponse.putString("dataExpired", cardResponse.expireDate)
+          connectCardResponse.putInt("numberCard", cardResponse.describeContents())
+          promise.resolve(connectCardResponse)
+        }
+        override fun onMessage(s: String) {
+          connectCardResponse.putBoolean("error", false)
+          connectCardResponse.putString("message", s)
+          promise.resolve(connectCardResponse)
+        }
+        override fun onError(s: String) {
+          connectCardResponse.putBoolean("error", true)
+          connectCardResponse.putString("message", s)
+          promise.resolve(connectCardResponse)
+        }
+      })
+    } catch (e: Exception) {
+      promise.reject("error", e.message)
+    }
+  }
+
+  @ReactMethod
+  fun cardStopConnectAntenna(promise: Promise) {
+    val cardStopConnectResponse = WritableNativeMap()
+    try {
+      PosDigital.getInstance().getCard().stopAllReaders()
+      cardStopConnectResponse.putBoolean("stop", true)
+      promise.resolve(cardStopConnectResponse)
+    } catch (e: Exception) {
+      promise.reject("error", e.message)
     }
   }
 }

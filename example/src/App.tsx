@@ -6,6 +6,8 @@ import {
   cameraMethod,
   startingServices,
   checkConnections,
+  cardStopConnectAntenna,
+  cardStartConnectAntenna,
 } from 'react-native-getnet-pos';
 
 export default function App() {
@@ -46,6 +48,20 @@ export default function App() {
       });
     }
   }
+  function CardMagnetic() {
+    if (connection) {
+      cardStartConnectAntenna('magnetic', 30).then((response) => {
+        console.log(response);
+      });
+    }
+  }
+  function CardStop() {
+    if (connection) {
+      cardStopConnectAntenna().then((response) => {
+        console.log(response);
+      });
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -53,6 +69,8 @@ export default function App() {
       <Button title="Click to Beep" onPress={Beep} />
       <Button title="Click to Turn On/Off LEDs" onPress={LEDs} />
       <Button title="Click to Open Rear Camera" onPress={Camera} />
+      <Button title="Click to Test Card - Magnetic" onPress={CardMagnetic} />
+      <Button title="Click to Stop Card" onPress={CardStop} />
     </View>
   );
 }
