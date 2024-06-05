@@ -12,6 +12,7 @@ npm install react-native-getnet-pos
 
 ```js
 import {
+  printView,
   ledMethod,
   beeperMethod,
   cameraMethod,
@@ -44,6 +45,36 @@ const startCard = await cardStartConnectAntenna("magnetic", 30); //inputs card t
 
 const stopCard = await cardStopConnectAntenna();
 // returns a object { "stop": boolean}.
+
+const data = {
+  textPrint: [
+    {
+      position: "left",
+      fontSize: "small",
+      text: "Printable text on the left with small size"
+    },
+    {
+      position: "right",
+      fontSize: "medium",
+      text: "Printable text on the right with medium size"
+    },
+    {
+      position: "center",
+      fontSize: "large",
+      text: "Printable text in the center with large size"
+    },
+    {
+      position: "bitmap",
+      fontSize: "large",
+      text: "bitmap text"
+    },
+  ]
+};
+
+const printView = await printView(data); // a textPrint object with arrays with string elements: position, fontSize and text.
+// to position: "bitmap" | "center" | "left" | "right"
+// to fontSize: "large" | "medium" | "small"
+// returns arrays with formatted texts.
 ```
 
 ## Contributing

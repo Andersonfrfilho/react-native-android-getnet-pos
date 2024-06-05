@@ -78,3 +78,17 @@ interface CardStopConnectAntennaResult {
 export function cardStopConnectAntenna(): Promise<CardStopConnectAntennaResult> {
   return GetnetPos.cardStopConnectAntenna();
 }
+
+interface PrintViewRequest {
+  textPrint: Array<{
+    text: string;
+    position: string;
+    fontSize: string;
+  }>;
+}
+interface PrintViewResult {
+  stop: boolean;
+}
+export function printView(props: PrintViewRequest): Promise<PrintViewResult> {
+  return GetnetPos.printView(props);
+}

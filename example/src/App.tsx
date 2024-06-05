@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, View, Text, Button } from 'react-native';
 import {
+  printView,
   ledMethod,
   beeperMethod,
   cameraMethod,
@@ -62,6 +63,47 @@ export default function App() {
       });
     }
   }
+  function LogPrintMethod() {
+    if (connection) {
+      const data = {
+        textPrint: [
+          {
+            position: 'left',
+            fontSize: 'small',
+            text: 'Printable text on the left with small size',
+          },
+          {
+            position: 'left',
+            fontSize: 'medium',
+            text: 'Printable text on the left with medium size',
+          },
+          {
+            position: 'left',
+            fontSize: 'large',
+            text: 'Printable text on the left with large size',
+          },
+          {
+            position: 'right',
+            fontSize: 'small',
+            text: 'Printable text on the right with small size',
+          },
+          {
+            position: 'center',
+            fontSize: 'small',
+            text: 'Printable text in the center with small size',
+          },
+          {
+            position: 'bitmap',
+            fontSize: 'large',
+            text: 'bitmap text',
+          },
+        ],
+      };
+      printView(data).then((result) => {
+        console.log(result);
+      });
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -71,6 +113,7 @@ export default function App() {
       <Button title="Click to Open Rear Camera" onPress={Camera} />
       <Button title="Click to Test Card - Magnetic" onPress={CardMagnetic} />
       <Button title="Click to Stop Card" onPress={CardStop} />
+      <Button title="Click to Log Print Method" onPress={LogPrintMethod} />
     </View>
   );
 }

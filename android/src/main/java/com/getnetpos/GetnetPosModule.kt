@@ -1,5 +1,6 @@
 package com.getnetpos
 
+import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
@@ -204,5 +205,57 @@ class GetnetPosModule(reactContext: ReactApplicationContext) :
     } catch (e: Exception) {
       promise.reject("error", e.message)
     }
+  }
+
+  @ReactMethod
+  fun printView(data: ReadableMap, promise: Promise) {
+    val printVector = mutableListOf<String>()
+    val sizePaper = 50
+
+    val textPrintArray = data.getArray("textPrint")
+
+    if (textPrintArray != null) {
+      for (i in 0 until textPrintArray.size()) {
+        val item = textPrintArray.getMap(i)
+        val position = item?.getString("position")?.lowercase()
+        val fontSize = item?.getString("fontSize")?.lowercase()
+        val text = item?.getString("text") ?: ""
+
+        val maxSizeLine = when (fontSize) {
+          "small" -> 50
+          "medium" -> 41
+          else -> 29
+        }
+
+        val newText = when (position) {
+          "bitmap" -> "|${if (fontSize == "small") "______Image show in next update module______" else "Image show in next update module"}|"
+          "left" -> {
+            val trimmedText = text.take(maxSizeLine)
+            val paddedText = trimmedText.padEnd(maxSizeLine - 1, '_')
+            "|$paddedText|"
+          }
+          "right" -> {
+            val trimmedText = if (text.length > maxSizeLine) text.takeLast(maxSizeLine) else text
+            val leftSpaces = maxSizeLine - trimmedText.length
+            "|" + "_".repeat(leftSpaces) + trimmedText + "|"
+          }
+          else -> {
+            val trimmedText = text.take(maxSizeLine)
+            val leftSpaces = (maxSizeLine - trimmedText.length) / 2
+            val rightSpaces = maxSizeLine - trimmedText.length - leftSpaces
+            "|${"_".repeat(leftSpaces)}$trimmedText${"_".repeat(rightSpaces)}|"
+          }
+        }
+        printVector.add(newText)
+      }
+    }
+
+    val promisePrintView = Arguments.createArray()
+
+    promisePrintView.pushString("|\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\".substring(0, sizePaper) + "|")
+    printVector.forEach { promisePrintView.pushString(it) }
+    promisePrintView.pushString("|\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\".substring(0, sizePaper) + "|")
+
+    promise.resolve(promisePrintView)
   }
 }
