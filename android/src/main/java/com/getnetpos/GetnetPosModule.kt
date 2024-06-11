@@ -1,9 +1,14 @@
 package com.getnetpos
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
+import android.util.Log
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.WritableNativeMap
@@ -12,7 +17,10 @@ import com.getnet.posdigital.camera.ICameraCallback
 import com.getnet.posdigital.card.CardResponse
 import com.getnet.posdigital.card.ICardCallback
 import com.getnet.posdigital.card.SearchType
-import android.util.Log
+import com.getnet.posdigital.printer.AlignMode;
+import com.getnet.posdigital.printer.FontFormat;
+import com.getnet.posdigital.printer.IPrinterCallback;
+import com.getnet.posdigital.printer.PrinterStatus;
 
 class GetnetPosModule(reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext) {
@@ -208,54 +216,181 @@ class GetnetPosModule(reactContext: ReactApplicationContext) :
   }
 
   @ReactMethod
-  fun printView(data: ReadableMap, promise: Promise) {
+  fun printView(data: ReadableArray, promise: Promise) {
     val printVector = mutableListOf<String>()
-    val sizePaper = 50
+    val sizePaper = 54
 
-    val textPrintArray = data.getArray("textPrint")
-
-    if (textPrintArray != null) {
-      for (i in 0 until textPrintArray.size()) {
-        val item = textPrintArray.getMap(i)
-        val position = item?.getString("position")?.lowercase()
+    if (data != null) {
+      for (i in 0 until data.size()) {
+        val item = data.getMap(i)
+        val value = item?.getString("value") ?: ""
+        val type = item?.getString("type")?.lowercase()
+        val align = item?.getString("align")?.lowercase()
         val fontSize = item?.getString("fontSize")?.lowercase()
-        val text = item?.getString("text") ?: ""
 
         val maxSizeLine = when (fontSize) {
-          "small" -> 50
-          "medium" -> 41
+          "small" -> 54
+          "medium" -> 42
           else -> 29
         }
-
-        val newText = when (position) {
-          "bitmap" -> "|${if (fontSize == "small") "______Image show in next update module______" else "Image show in next update module"}|"
-          "left" -> {
-            val trimmedText = text.take(maxSizeLine)
-            val paddedText = trimmedText.padEnd(maxSizeLine - 1, '_')
-            "|$paddedText|"
+        if (type == "text") {
+          val newText = when (align) {
+            "left" -> {
+              val trimmedText = value.take(maxSizeLine)
+              val paddedText = trimmedText.padEnd(maxSizeLine - 1, '_')
+              "|$paddedText|"
+            }
+            "right" -> {
+              val trimmedText = if (value.length > maxSizeLine) value.takeLast(maxSizeLine) else value
+              val leftSpaces = maxSizeLine - trimmedText.length
+              "|" + "_".repeat(leftSpaces) + trimmedText + "|"
+            }
+            else -> {
+              val trimmedText = value.take(maxSizeLine)
+              val leftSpaces = (maxSizeLine - trimmedText.length) / 2
+              val rightSpaces = maxSizeLine - trimmedText.length - leftSpaces
+              "|${"_".repeat(leftSpaces)}$trimmedText${"_".repeat(rightSpaces)}|"
+            }
           }
-          "right" -> {
-            val trimmedText = if (text.length > maxSizeLine) text.takeLast(maxSizeLine) else text
-            val leftSpaces = maxSizeLine - trimmedText.length
-            "|" + "_".repeat(leftSpaces) + trimmedText + "|"
-          }
-          else -> {
-            val trimmedText = text.take(maxSizeLine)
-            val leftSpaces = (maxSizeLine - trimmedText.length) / 2
-            val rightSpaces = maxSizeLine - trimmedText.length - leftSpaces
-            "|${"_".repeat(leftSpaces)}$trimmedText${"_".repeat(rightSpaces)}|"
-          }
+          printVector.add(newText)
+        } else if (type == "image") {
+          val image = "|${if (fontSize == "small") "______Image show in next update module______" else "Image show in next update module"}|"
+          printVector.add(image)
         }
-        printVector.add(newText)
       }
     }
 
     val promisePrintView = Arguments.createArray()
 
-    promisePrintView.pushString("|\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\".substring(0, sizePaper) + "|")
+    promisePrintView.pushString("|\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\".substring(0, sizePaper) + "|")
     printVector.forEach { promisePrintView.pushString(it) }
-    promisePrintView.pushString("|\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\".substring(0, sizePaper) + "|")
+    promisePrintView.pushString("|\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\".substring(0, sizePaper) + "|")
 
     promise.resolve(promisePrintView)
+  }
+
+  @ReactMethod
+  fun printMethod(options: ReadableArray, promise: Promise) {
+    try {
+      PosDigital.getInstance().printer.init()
+      for (i in 0 until options.size()) {
+        val option = options.getMap(i)
+        val weight = option?.getInt("weight") ?: 0
+        val value = option?.getString("value") ?: ""
+        val type = option?.getString("type")?.lowercase()
+        val align = option?.getString("align")?.lowercase()
+
+        when (type) {
+          "image" -> {
+            PosDigital.getInstance().printer.setGray(weight)
+            val position = value.indexOf(',')
+            val newValue = if (position == -1) value else value.substring(position + 1, value.length)
+            val byteImage = Base64.decode(newValue, Base64.DEFAULT)
+            val decodeImage = BitmapFactory.decodeByteArray(byteImage, 0, byteImage.size)
+
+            when (align) {
+              "left" -> {
+                PosDigital.getInstance().printer.addImageBitmap(AlignMode.LEFT, decodeImage)
+                PosDigital.getInstance().printer.addText(AlignMode.LEFT, "\n")
+              }
+              "right" -> {
+                PosDigital.getInstance().printer.addImageBitmap(AlignMode.RIGHT, decodeImage)
+                PosDigital.getInstance().printer.addText(AlignMode.RIGHT, "\n")
+              }
+              else -> {
+                PosDigital.getInstance().printer.addImageBitmap(AlignMode.CENTER, decodeImage)
+                PosDigital.getInstance().printer.addText(AlignMode.CENTER, "\n")
+              }
+            }
+          }
+          "barcode" -> {
+            PosDigital.getInstance().printer.setGray(weight)
+            PosDigital.getInstance().printer.defineFontFormat(FontFormat.SMALL)
+            when (align) {
+              "left" -> {
+                PosDigital.getInstance().printer.addBarCode(AlignMode.LEFT, value)
+                PosDigital.getInstance().printer.addText(AlignMode.LEFT, "\n")
+              }
+              "right" -> {
+                PosDigital.getInstance().printer.addBarCode(AlignMode.RIGHT, value)
+                PosDigital.getInstance().printer.addText(AlignMode.RIGHT, "\n")
+              }
+              else -> {
+                PosDigital.getInstance().printer.addBarCode(AlignMode.CENTER, value)
+                PosDigital.getInstance().printer.addText(AlignMode.CENTER, "\n")
+              }
+            }
+          }
+          "qrcode" -> {
+            PosDigital.getInstance().printer.setGray(weight)
+            PosDigital.getInstance().printer.defineFontFormat(FontFormat.SMALL)
+            when (align) {
+              "left" -> {
+                PosDigital.getInstance().printer.addQrCode(AlignMode.LEFT, 240, value)
+                PosDigital.getInstance().printer.addText(AlignMode.LEFT, "\n")
+              }
+              "right" -> {
+                PosDigital.getInstance().printer.addQrCode(AlignMode.RIGHT, 240, value)
+                PosDigital.getInstance().printer.addText(AlignMode.RIGHT, "\n")
+              }
+              else -> {
+                PosDigital.getInstance().printer.addQrCode(AlignMode.CENTER, 240, value)
+                PosDigital.getInstance().printer.addText(AlignMode.CENTER, "\n")
+              }
+            }
+          }
+          else -> {
+            PosDigital.getInstance().printer.setGray(weight)
+            val fontSize = option?.getString("fontSize")?.lowercase()
+            when (fontSize) {
+              "small" -> PosDigital.getInstance().printer.defineFontFormat(FontFormat.SMALL)
+              "large" -> PosDigital.getInstance().printer.defineFontFormat(FontFormat.LARGE)
+              else -> PosDigital.getInstance().printer.defineFontFormat(FontFormat.MEDIUM)
+            }
+            when (align) {
+              "left" -> PosDigital.getInstance().printer.addText(AlignMode.LEFT, value)
+              "right" -> PosDigital.getInstance().printer.addText(AlignMode.RIGHT, value)
+              else -> PosDigital.getInstance().printer.addText(AlignMode.CENTER, value)
+            }
+          }
+        }
+      }
+
+      PosDigital.getInstance().printer.addText(AlignMode.LEFT, "\n \n \n \n")
+      PosDigital.getInstance().printer.print(object : IPrinterCallback.Stub() {
+
+        override fun onSuccess() {
+          val printResponse = WritableNativeMap().apply {
+            putBoolean("printer", true)
+            putString("message", "success")
+          }
+          promise.resolve(printResponse)
+        }
+
+        override fun onError(i: Int) {
+          val printResponse = WritableNativeMap().apply {
+            putBoolean("printer", false)
+            val message = when (i) {
+              2 -> "Impressora não iniciada"
+              3 -> "Impressora superaquecida"
+              4 -> "Fila de impressão muito grande"
+              5 -> "Parametros incorretos"
+              10 -> "Porta da impressora aberta"
+              11 -> "Temperatura baixa de mais"
+              12 -> "Sem bateria suficiente para impressão"
+              13 -> "Motor de passo com problemas"
+              15 -> "Sem bobina"
+              16 -> "Bobina acabando"
+              17 -> "Bobina travada"
+              else -> "Erro não identificado"
+            }
+            putString("message", message)
+          }
+          promise.resolve(printResponse)
+        }
+      })
+    } catch (error: Exception) {
+      promise.reject("error", error.message)
+    }
   }
 }

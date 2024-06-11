@@ -80,15 +80,28 @@ export function cardStopConnectAntenna(): Promise<CardStopConnectAntennaResult> 
 }
 
 interface PrintViewRequest {
-  textPrint: Array<{
-    text: string;
-    position: string;
-    fontSize: string;
-  }>;
+  type: string;
+  value: string;
+  align: string;
 }
 interface PrintViewResult {
   stop: boolean;
 }
-export function printView(props: PrintViewRequest): Promise<PrintViewResult> {
+export function printView(
+  props: Array<PrintViewRequest>
+): Promise<PrintViewResult> {
   return GetnetPos.printView(props);
+}
+
+interface PrintMethodRequest extends PrintViewRequest {
+  weight: number;
+}
+interface PrintMethodResult {
+  message: string;
+  printer: boolean;
+}
+export function printMethod(
+  props: Array<PrintMethodRequest>
+): Promise<PrintMethodResult> {
+  return GetnetPos.printMethod(props);
 }
