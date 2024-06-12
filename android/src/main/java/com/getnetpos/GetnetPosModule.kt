@@ -220,43 +220,41 @@ class GetnetPosModule(reactContext: ReactApplicationContext) :
     val printVector = mutableListOf<String>()
     val sizePaper = 54
 
-    if (data != null) {
-      for (i in 0 until data.size()) {
-        val item = data.getMap(i)
-        val value = item?.getString("value") ?: ""
-        val type = item?.getString("type")?.lowercase()
-        val align = item?.getString("align")?.lowercase()
-        val fontSize = item?.getString("fontSize")?.lowercase()
+    for (i in 0 until data.size()) {
+      val item = data.getMap(i)
+      val value = item.getString("value") ?: ""
+      val type = item.getString("type")?.lowercase()
+      val align = item.getString("align")?.lowercase()
+      val fontSize = item.getString("fontSize")?.lowercase()
 
-        val maxSizeLine = when (fontSize) {
-          "small" -> 54
-          "medium" -> 42
-          else -> 29
-        }
-        if (type == "text") {
-          val newText = when (align) {
-            "left" -> {
-              val trimmedText = value.take(maxSizeLine)
-              val paddedText = trimmedText.padEnd(maxSizeLine - 1, '_')
-              "|$paddedText|"
-            }
-            "right" -> {
-              val trimmedText = if (value.length > maxSizeLine) value.takeLast(maxSizeLine) else value
-              val leftSpaces = maxSizeLine - trimmedText.length
-              "|" + "_".repeat(leftSpaces) + trimmedText + "|"
-            }
-            else -> {
-              val trimmedText = value.take(maxSizeLine)
-              val leftSpaces = (maxSizeLine - trimmedText.length) / 2
-              val rightSpaces = maxSizeLine - trimmedText.length - leftSpaces
-              "|${"_".repeat(leftSpaces)}$trimmedText${"_".repeat(rightSpaces)}|"
-            }
+      val maxSizeLine = when (fontSize) {
+        "small" -> 54
+        "medium" -> 42
+        else -> 29
+      }
+      if (type == "text") {
+        val newText = when (align) {
+          "left" -> {
+            val trimmedText = value.take(maxSizeLine)
+            val paddedText = trimmedText.padEnd(maxSizeLine - 1, '_')
+            "|$paddedText|"
           }
-          printVector.add(newText)
-        } else if (type == "image") {
-          val image = "|${if (fontSize == "small") "______Image show in next update module______" else "Image show in next update module"}|"
-          printVector.add(image)
+          "right" -> {
+            val trimmedText = if (value.length > maxSizeLine) value.takeLast(maxSizeLine) else value
+            val leftSpaces = maxSizeLine - trimmedText.length
+            "|" + "_".repeat(leftSpaces) + trimmedText + "|"
+          }
+          else -> {
+            val trimmedText = value.take(maxSizeLine)
+            val leftSpaces = (maxSizeLine - trimmedText.length) / 2
+            val rightSpaces = maxSizeLine - trimmedText.length - leftSpaces
+            "|${"_".repeat(leftSpaces)}$trimmedText${"_".repeat(rightSpaces)}|"
+          }
         }
+        printVector.add(newText)
+      } else if (type == "image") {
+        val image = "|${if (fontSize == "small") "______Image show in next update module______" else "Image show in next update module"}|"
+        printVector.add(image)
       }
     }
 
@@ -275,10 +273,10 @@ class GetnetPosModule(reactContext: ReactApplicationContext) :
       PosDigital.getInstance().printer.init()
       for (i in 0 until options.size()) {
         val option = options.getMap(i)
-        val weight = option?.getInt("weight") ?: 0
-        val value = option?.getString("value") ?: ""
-        val type = option?.getString("type")?.lowercase()
-        val align = option?.getString("align")?.lowercase()
+        val value = option.getString("value") ?: ""
+        val type = option.getString("type")?.lowercase()
+        val align = option.getString("align")?.lowercase()
+        val weight = if (option.hasKey("weight")) option.getInt("weight") else 0
 
         when (type) {
           "image" -> {
@@ -341,7 +339,7 @@ class GetnetPosModule(reactContext: ReactApplicationContext) :
           }
           else -> {
             PosDigital.getInstance().printer.setGray(weight)
-            val fontSize = option?.getString("fontSize")?.lowercase()
+            val fontSize = option.getString("fontSize")?.lowercase()
             when (fontSize) {
               "small" -> PosDigital.getInstance().printer.defineFontFormat(FontFormat.SMALL)
               "large" -> PosDigital.getInstance().printer.defineFontFormat(FontFormat.LARGE)
