@@ -1,5 +1,5 @@
 {
-  "name": "react-native-getnet-pos",
+  "name": "@react-native-community/getnet-pos",
   "version": "0.1.0",
   "description": "react-native module to work getnet-pos by react-native module",
   "main": "lib/commonjs/index",
