@@ -11,10 +11,7 @@
     "src",
     "lib",
     "android",
-    "ios",
     "cpp",
-    "*.podspec",
-    "!ios/build",
     "!android/build",
     "!android/gradle",
     "!android/gradlew",
@@ -30,20 +27,25 @@
     "test": "jest",
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
-    "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib",
+    "clean": "del-cli android/build example/android/build example/android/app/build",
     "prepare": "bob build",
     "release": "release-it"
   },
   "keywords": [
     "react-native",
-    "ios",
-    "android"
+    "android",
+    "getnet",
+    "pos",
+    "santander"
   ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Andersonfrfilho/react-native-getnet-pos.git"
   },
   "author": "Anderson Fernandes <andersonfrfilho@gmail.com> (https://github.com/Andersonfrfilho)",
+  "contributors": [
+    "Matheus Carvalho <https://github.com/matheuscarvalho17> (https://github.com/matheuscarvalho17)"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/Andersonfrfilho/react-native-getnet-pos/issues"
