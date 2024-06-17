@@ -10,7 +10,7 @@ import {
   checkConnections,
   cardStopConnectAntenna,
   cardStartConnectAntenna,
-} from 'react-native-getnet-pos';
+} from '@react-native-community/getnet-pos';
 
 export default function App() {
   const [connection, setConnection] = React.useState<boolean | undefined>();

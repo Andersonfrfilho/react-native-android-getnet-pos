@@ -2,7 +2,7 @@
   "compilerOptions": {
     "rootDir": ".",
     "paths": {
-      "react-native-getnet-pos": ["./src/index"]
+      "@react-native-community/getnet-pos": ["./src/index"]
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
