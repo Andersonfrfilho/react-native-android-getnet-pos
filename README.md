@@ -1,11 +1,11 @@
-# react-native-getnet-pos
+# @react-native-community/getnet-pos
 
 react-native module to work getnet-pos by react-native module
 
 ## Installation
 
 ```sh
-npm install react-native-getnet-pos
+npm install @react-native-community/getnet-pos
 ```
 
 ## Usage
@@ -21,7 +21,7 @@ import {
   checkConnections,
   cardStopConnectAntenna,
   cardStartConnectAntenna,
-} from 'react-native-getnet-pos';
+} from '@react-native-community/getnet-pos';
 
 // ...
 
