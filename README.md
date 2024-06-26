@@ -1,17 +1,17 @@
-# react-native-android-getnet-pos
+# @adatechnology/react-native-android-getnet-pos
 
 react-native module to work getnet-pos by react-native module
 
 ## Installation
 
 ```sh
-npm install react-native-android-getnet-pos
+npm install @adatechnology/react-native-android-getnet-pos
 ```
 
 ## Usage
 
 ```js
-import { multiply } from 'react-native-android-getnet-pos';
+import { multiply } from '@adatechnology/react-native-android-getnet-pos';
 
 // ...
 

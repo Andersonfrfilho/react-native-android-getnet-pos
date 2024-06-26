@@ -1,5 +1,5 @@
 {
-  "name": "react-native-android-getnet-pos",
+  "name": "@adatechnology/react-native-android-getnet-pos",
   "version": "0.1.0",
   "description": "react-native module to work getnet-pos by react-native module",
   "main": "lib/commonjs/index",
@@ -26,7 +26,7 @@
     "!**/.*"
   ],
   "scripts": {
-    "example": "yarn workspace react-native-android-getnet-pos-example",
+    "example": "yarn workspace @adatechnology/react-native-android-getnet-pos-example",
     "test": "jest",
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
@@ -41,14 +41,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Andersonfrfilho/react-native-android-getnet-pos.git"
+    "url": "git+https://github.com/Andersonfrfilho/@adatechnology/react-native-android-getnet-pos.git"
   },
   "author": "Anderson <andersonfrfilho@gmail.com> (https://github.com/Andersonfrfilho)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Andersonfrfilho/react-native-android-getnet-pos/issues"
+    "url": "https://github.com/Andersonfrfilho/@adatechnology/react-native-android-getnet-pos/issues"
   },
-  "homepage": "https://github.com/Andersonfrfilho/react-native-android-getnet-pos#readme",
+  "homepage": "https://github.com/Andersonfrfilho/@adatechnology/react-native-android-getnet-pos#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },

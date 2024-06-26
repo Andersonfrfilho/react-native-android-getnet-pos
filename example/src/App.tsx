@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { StyleSheet, View, Text } from 'react-native';
-import { multiply } from 'react-native-android-getnet-pos';
+import { multiply } from '@adatechnology/react-native-android-getnet-pos';
 
 export default function App() {
   const [result, setResult] = React.useState<number | undefined>();
