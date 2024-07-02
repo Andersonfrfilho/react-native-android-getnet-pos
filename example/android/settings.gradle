@@ -2,3 +2,6 @@ rootProject.name = 'AndroidGetnetPosExample'
 apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
 include ':app'
 includeBuild('../node_modules/react-native-gradle-plugin')
+
+include ':libposdigital-1.8.1-13-release'
+project(':libposdigital-1.8.1-13-release').projectDir = new File(settingsDir, '../../android/libposdigital-1.8.1-13-release')
